@@ -11,3 +11,6 @@
 
 (defn init []
   (change-bg))
+
+(defonce run-init
+  (init))
