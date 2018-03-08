@@ -5,7 +5,5 @@
 
 (def styles
   [:&.hello
-   {
-    :width (percent 100)
-    :font-size (px 40)}
-   ])
+   {:width (percent 100)
+    :font-size (px 40)}])

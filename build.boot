@@ -1,5 +1,5 @@
 (set-env!
- :project 'key-terrace
+ :project 'simple-static
  :version "0.1.0"
  :source-paths #{"src"}
  :resource-paths #{"resources"}
