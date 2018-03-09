@@ -60,10 +60,6 @@
                           ["styles.css"])})
   identity)
 
-(deftask dev-options []
-  (set-env! :debug true)
-  identity)
-
 (deftask cider "CIDER profile" []
   (require 'boot.repl)
   (swap! @(resolve 'boot.repl/*default-dependencies*)
@@ -94,7 +90,6 @@
    (serve :dir "target/public/"
           :port 3001)
    (cider)
-   (dev-options)
    (cljs-repl)
    (watch :verbose true)
    (refresh)
