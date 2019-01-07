@@ -1,4 +1,6 @@
-## Example Clojure static site setup for netlify. Using boot, hiccup templates, clojurescript.
+# Example Clojure static site setup for netlify. Using boot, hiccup templates, clojurescript and garden for CSS
+
+## Running / building locally
 
 `boot dev` - local dev server on localhost:3001 with refresh for cljs & css
 
