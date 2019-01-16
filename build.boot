@@ -87,6 +87,7 @@
 (deftask dev []
   (set-env! :debug true)
   (comp
+   (set-options)
    (serve :dir "target/public/"
           :port 3001)
    (cider)
@@ -104,4 +105,4 @@
    (build-frontend)
    (sift :include #{#"\.out" #".*\.edn$"} :invert true)
    (sift :include #{#"^public/"})
-   (target :dir #{"target"})))
+   (target)))
