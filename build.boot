@@ -15,7 +15,7 @@
                  ;; boot
                  [adzerk/boot-cljs "2.1.4"                  :scope "test"
                   :exclusions [org.clojure/clojurescript]]
-                 [poyo.co/boot-create-html "0.1.1-SNAPSHOT" :scope "test"]
+                 [co.poyo/boot-create-html "0.1.0"          :scope "test"]
                  [com.cemerick/piggieback "0.2.1"           :scope "test"]
                  [adzerk/boot-cljs-repl "0.3.3"             :scope "test"]
                  [adzerk/boot-reload "0.5.2"                :scope "test"]
@@ -41,7 +41,7 @@
  '[tasks.garden]
  '[clojure.string :as s]
  '[danielsz.autoprefixer :refer [autoprefixer]]
- '[poyo.co.boot-create-html :refer [create-html]]
+ '[co.poyo.boot-create-html :refer [create-html]]
  '[samestep.boot-refresh :refer [refresh]])
 
 (task-options!
