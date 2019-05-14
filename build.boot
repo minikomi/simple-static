@@ -5,31 +5,31 @@
  :resource-paths #{"resources"}
  :dependencies '[
                  ;; pin deps
-                 [org.clojure/clojure            "1.9.0"   :scope "provided"]
-                 [org.clojure/clojurescript      "1.9.946"]
+                 [org.clojure/clojure            "1.10.0"   :scope "provided"]
+                 [org.clojure/clojurescript      "1.10.520"]
                  ;; nrepl
-                 [org.clojure/tools.nrepl "0.2.13"]
+                 [cider/piggieback "0.4.0"                   :scope "test"]
+                 [nrepl "0.6.0"                              :scope "test"]
                  ;; other
-                 [clj-time "0.14.2"]
+                 [clj-time "0.15.1"]
                  [hiccup "1.0.5"]
                  ;; boot
-                 [adzerk/boot-cljs "2.1.4"                  :scope "test"
+                 [adzerk/boot-cljs "2.1.5"                  :scope "test"
                   :exclusions [org.clojure/clojurescript]]
                  [co.poyo/boot-create-html "0.1.0"          :scope "test"]
-                 [com.cemerick/piggieback "0.2.1"           :scope "test"]
-                 [adzerk/boot-cljs-repl "0.3.3"             :scope "test"]
-                 [adzerk/boot-reload "0.5.2"                :scope "test"]
+                 [adzerk/boot-reload "0.6.0"                :scope "test"]
                  [samestep/boot-refresh "0.1.0"             :scope "test"]
                  [weasel "0.7.0"                            :scope "test"]
                  [danielsz/boot-autoprefixer "0.1.0"        :scope "test"]
                  [pandeiro/boot-http "0.8.3"                :scope "test"]
                  ;; frontend
-                 [com.andrewmcveigh/cljs-time "0.5.1"]
-                 [day8.re-frame/http-fx "0.1.5"]
-                 [garden "1.3.4"]
-                 [re-frame "0.10.5"]
-                 [re-frisk "0.5.3" :exclusions [ring/ring-core]]
-                 [reagent "0.7.0"]])
+                 [com.andrewmcveigh/cljs-time "0.5.2"]
+                 [day8.re-frame/http-fx "0.1.6"]
+                 [adzerk/boot-cljs-repl "0.4.0"]
+                 [garden "1.3.9"]
+                 [re-frame "0.10.6"]
+                 [re-frisk "0.5.4.1" :exclusions [ring/ring-core]]
+                 [reagent "0.8.1"]])
 
 (require
  '[adzerk.boot-cljs :refer [cljs]]
@@ -63,8 +63,8 @@
 (deftask cider "CIDER profile" []
   (require 'boot.repl)
   (swap! @(resolve 'boot.repl/*default-dependencies*)
-         concat '[[cider/cider-nrepl "0.16.0-SNAPSHOT"]
-                  [refactor-nrepl "2.4.0-SNAPSHOT"]])
+         concat '[[cider/cider-nrepl "0.21.1"]
+                  [refactor-nrepl "2.4.1-SNAPSHOT"]])
   (swap! @(resolve 'boot.repl/*default-middleware*)
          concat '[cider.nrepl/cider-middleware
                   refactor-nrepl.middleware/wrap-refactor])
