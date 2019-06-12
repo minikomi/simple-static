@@ -13,7 +13,7 @@
                                    com.taoensso/timbre   {:mvn/version "4.10.0"}}}
            :figwheel {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.0"}}}
            :cider    {:extra-deps {org.clojure/clojure {:mvn/version "RELEASE"}
-                                   cider/cider-nrepl   {:mvn/version "RELEASE"}
+                                   cider/cider-nrepl   {:mvn/version "0.22.0-beta4"}
                                    refactor-nrepl      {:mvn/version "RELEASE"}}}
            :test     {:extra-paths ["test"]
                       :extra-deps  {org.clojure/test.check {:mvn/version "RELEASE"}}}

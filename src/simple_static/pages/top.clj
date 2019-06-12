@@ -15,4 +15,4 @@
   (layout/base-template
    [:div#top-inner
     top-header]
-   (dissoc args :template)))
+   args))

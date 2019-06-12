@@ -2,7 +2,9 @@
   (:require [mount.core :refer [defstate] :as mount]
             [taoensso.timbre :as timbre]
             [nrepl.server :as nrepl-server]
-            [simple-static.components.config :refer [env]]))
+            [simple-static.components.config :refer [env]]
+            [refactor-nrepl.middleware :as refactor]
+            ))
 
 (defn nrepl-handler []
   (require 'cider.nrepl)
@@ -19,7 +21,7 @@
     (nrepl-server/start-server
      :port nrepl-port
      :init-ns 'sekistone.server.repl
-     :handler (nrepl-handler)
+     :handler (-> (nrepl-handler) refactor/wrap-refactor)
      :bind nrepl-bind))
   :stop
   (when nrepl

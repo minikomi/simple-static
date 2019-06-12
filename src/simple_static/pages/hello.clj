@@ -18,4 +18,4 @@
 (defn template [args]
   (layout/base-template
    [:div hello-list]
-   (dissoc args :template)))
+   args))
