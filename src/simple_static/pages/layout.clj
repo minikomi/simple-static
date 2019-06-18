@@ -66,7 +66,7 @@
   [:h2#section-header (name bc)])
 
 (def google-analytics
-  [:script {:a "b"}])
+  [:script {:a "c"}])
 
 (defn base-template
   ([content] (base-template content {}))

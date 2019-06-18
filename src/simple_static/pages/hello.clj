@@ -1,7 +1,9 @@
 (ns simple-static.pages.hello
   (:require [simple-static.pages.layout
              :as layout
-             :refer [defdiv]]))
+             :refer [defdiv]]
+            [clojure.set :as set]
+            [simple-static.pages.aaa]))
 
 (defdiv hello-list
   [:h1 "hello"]
