@@ -1,5 +1,5 @@
 (ns simple-static.components.pagebuilder
-  (:require [simple-static.components.helper.watch-and-run :as watch-and-run]
+  (:require [simple-static.components.watch-and-run :as watch-and-run]
             [simple-static.components.ns-tracker :as ns-tracker]
             [mount.core :as mount]
             [simple-static.pages.top :as top]

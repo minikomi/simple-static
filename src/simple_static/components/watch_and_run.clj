@@ -1,4 +1,4 @@
-(ns simple-static.components.helper.watch-and-run
+(ns simple-static.components.watch-and-run
   (:require [clojure.java.io :as io]
             [clojure.java.classpath :as cp]
             [clojure.string :as str]
@@ -15,21 +15,30 @@
             [mount.core :as mount])
   (:import java.io.File
            java.nio.file.Paths
-           java.nio.file.Files)
-  )
+           java.nio.file.Files))
 
-(def watched (atom
-              {"index.html"
-               {:path "index.html",
-                :ns 'simple-static.pages.top,
-                :data {:body-class "top"},
-                :template pprint/pprint},
-               "hello/index.html"
-               {:path "hello/index.html",
-                :ns 'simple-static.pages.hello,
-                :data {:body-class "hello"},
-                :template pprint/pprint}}
-              ))
+(def watched
+  (atom
+   {"index.html"
+    {:path "index.html",
+     :ns 'simple-static.pages.top,
+     :data {:body-class "top"},
+     :template pprint/pprint},
+    "hello/index.html"
+    {:path "hello/index.html",
+     :ns 'simple-static.pages.hello,
+     :data {:body-class "hello"},
+     :template pprint/pprint}}))
+
+(defn get-dep-graph [src-paths]
+  (let [src-files
+        (apply set/union
+               (map (comp #(ns-find/find-clojure-sources-in-dir %)
+                          io/file)
+                    src-paths))
+        tracker (ns-file/add-files {} src-files)
+        dep-graph (tracker ::ns-track/deps)]
+    dep-graph))
 
 (defn all-nested-deps [ns-sym]
   (let [tracked-src (:tracked-src env ["src" "data"])
@@ -42,9 +51,6 @@
                  part-of-project?
                  (get all-dependencies %))
                ns-sym))))
-
-(all-nested-deps
- 'simple-static.pages.hello)
 
 (defn ns-file-name
   "Copied from clojure.tools.namespace.move because it's private there."
