@@ -4,7 +4,8 @@
    [simple-static.components.nrepl :as n]
    [simple-static.components.pagebuilder]
    [mount.core :as mount]
-   ))
+
+   [taoensso.timbre :as timbre]))
 
 (defn start! []
   (->
@@ -27,5 +28,5 @@
   )
 
 (defn -main [& args]
-  (mount/start)
-  (println "yo we started"))
+  (timbre/info (mount/start))
+  (timbre/info "yo we started"))

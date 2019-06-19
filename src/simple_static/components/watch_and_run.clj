@@ -17,19 +17,6 @@
            java.nio.file.Paths
            java.nio.file.Files))
 
-(def watched
-  (atom
-   {"index.html"
-    {:path "index.html",
-     :ns 'simple-static.pages.top,
-     :data {:body-class "top"},
-     :template pprint/pprint},
-    "hello/index.html"
-    {:path "hello/index.html",
-     :ns 'simple-static.pages.hello,
-     :data {:body-class "hello"},
-     :template pprint/pprint}}))
-
 (defn get-dep-graph [src-paths]
   (let [src-files
         (apply set/union
@@ -40,7 +27,7 @@
         dep-graph (tracker ::ns-track/deps)]
     dep-graph))
 
-(defn all-nested-deps [ns-sym]
+(defn all-nested-deps [watched ns-sym]
   (let [tracked-src (:tracked-src env ["src" "data"])
         all-dependencies (:dependencies (get-dep-graph tracked-src))
         watched-ns-syms (set (map :ns (vals @watched)))
@@ -82,26 +69,37 @@ namespace name that corresponds with the path name"
   [namespaces path]
   (first (filter #(.endsWith path (ns-file-name %)) namespaces)))
 
-(defn watch-handler [ctx ev]
-  (let [watched-ns-syms (set (map :ns (vals @watched)))
-        changed (set (tracker))
-        reloaded (volatile! #{})]
-    (doseq [ns-sym watched-ns-syms
-            :let [nested-deps (all-nested-deps ns-sym)
-                  intersection (set/intersection nested-deps changed)]
-            :when (not-empty intersection)]
-      (doseq [reload-ns-sym intersection
-              :when (not (contains? @reloaded reload-ns-sym))]
-        (timbre/info "Reloading:" reload-ns-sym)
-        (require reload-ns-sym :reload)
-        (vswap! reloaded conj reload-ns-sym))
-      (timbre/info "Running: " ns-sym "builder")))
-  ctx)
+(defn watch-handler [watched]
+  (fn wrapped-watch-handler [ctx ev]
+    (let [watched-ns-syms (set (map :ns (vals @watched)))
+          changed (set (tracker))
+          reloaded (volatile! #{})]
+      (doseq [ns-sym watched-ns-syms
+              :let [nested-deps (all-nested-deps watched ns-sym)
+                    intersection (set/intersection nested-deps changed)]
+              :when (not-empty intersection)]
+        (doseq [reload-ns-sym intersection
+                :when (not (contains? @reloaded reload-ns-sym))]
+          (timbre/info "Reloading:" reload-ns-sym)
+          (require reload-ns-sym :reload)
+          (vswap! reloaded conj reload-ns-sym))
+        (timbre/info "Running: " ns-sym "builder")))
+    ctx))
 
 (mount/defstate watch-and-run
   :start
-  (hawk/watch! [{:paths   (into
-                           (:tracked-src env ["src" "data"]))
-                 :handler watch-handler}])
+  (let [watched (atom {})]
+   {:watcher (hawk/watch! [{:paths (:tracked-src env ["src" "data"])
+                            :handler (watch-handler watched)}])
+    :watched watched})
   :stop
-  (hawk/stop! watch-and-run))
+  (hawk/stop! (:watcher watch-and-run)))
+
+(defn add-jobs [watcher m]
+  (when (:watched watcher)
+    (swap! (:watched watcher) into m)))
+
+(defn remove-jobs [watcher m]
+  (doseq [v (keys m)]
+    (when (:watched watcher)
+      (swap! (:watched watcher) dissoc v))))

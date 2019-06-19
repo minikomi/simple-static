@@ -28,7 +28,7 @@
                           :data {:body-class "hello"}}}})
 
 (defn sym->ns-sym [sym]
-  (-> (resolve sym)
+  (-> (ns-resolve 'simple-static.components.pagebuilder sym)
       meta
       :ns
       ns-name
@@ -59,15 +59,18 @@
        out-map))
      @acc)))
 
-(let [namespaces (set (map first (parse-out-map out-map)))]
-
- (mount/defstate
-   simple-pages
-   :start
-  #()
-
-   :stop
-   #()))
+(mount/defstate
+  simple-pages
+  :start
+  (let [out-map (parse-out-map out-map)]
+    (swap!
+     (:watched watch-and-run/watch-and-run)
+     into out-map)
+    out-map)
+  :stop
+  (doseq [k (keys simple-pages)]
+    (swap! (:watched watch-and-run/watch-and-run)
+           dissoc k)))
 
 (comment
  (watch-and-run/start-watcher
@@ -83,5 +86,4 @@
            (when (namespaces ns)
              (require ns :reload-all))
            ))
-       ctx)})
-  )
+       ctx)}))
