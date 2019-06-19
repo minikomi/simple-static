@@ -31,21 +31,20 @@
                 :template pprint/pprint}}
               ))
 
-(defn get-watched-nested-deps []
- (let [tracked-src (:tracked-src env ["src" "data"])
-       all-dependencies (:dependencies (get-dep-graph tracked-src))
-       watched-ns-syms (set (map :ns (vals @watched)))
-       ns-names (set (ns-find/find-namespaces (map io/file tracked-src)))
+(defn all-nested-deps [ns-sym]
+  (let [tracked-src (:tracked-src env ["src" "data"])
+        all-dependencies (:dependencies (get-dep-graph tracked-src))
+        watched-ns-syms (set (map :ns (vals @watched)))
+        ns-names (set (ns-find/find-namespaces (map io/file tracked-src)))
        part-of-project? (partial contains? ns-names)]
-   (for [ns-sym watched-ns-syms
-         :let [nested-local-deps
-               (tree-seq
-                identity
-                #(filter
-                  part-of-project?
-                  (get all-dependencies %))
-                ns-sym)]]
-     [ns-sym (set nested-local-deps)])))
+    (set (tree-seq identity
+               #(filter
+                 part-of-project?
+                 (get all-dependencies %))
+               ns-sym))))
+
+(all-nested-deps
+ 'simple-static.pages.hello)
 
 (defn ns-file-name
   "Copied from clojure.tools.namespace.move because it's private there."
@@ -78,12 +77,13 @@ namespace name that corresponds with the path name"
   (first (filter #(.endsWith path (ns-file-name %)) namespaces)))
 
 (defn watch-handler [ctx ev]
-  (let [tracked-src (:tracked-src env ["src" "data"])
-        all-dependencies (:dependencies (get-dep-graph tracked-src))
-        watched-ns-syms (set (map :ns (vals @watched)))
-        changed (tracker)]
-    (doseq [ns-sym watched-ns-syms]
-      (timbre/info ns-sym (get all-dependencies ns-sym))
+  (let [watched-ns-syms (set (map :ns (vals @watched)))
+        changed (set (tracker))]
+    (doseq [ns-sym watched-ns-syms
+            :let [nested-deps (all-nested-deps ns-sym)
+                  intersection (set/intersection nested-deps changed)]
+            :when (not-empty intersection)]
+      (timbre/info "intersection:\n" ns-sym "\n---- " (set/intersection nested-deps changed))
       ))
   ctx)
 
