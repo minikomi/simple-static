@@ -78,13 +78,18 @@ namespace name that corresponds with the path name"
 
 (defn watch-handler [ctx ev]
   (let [watched-ns-syms (set (map :ns (vals @watched)))
-        changed (set (tracker))]
+        changed (set (tracker))
+        reloaded (volatile! #{})]
     (doseq [ns-sym watched-ns-syms
             :let [nested-deps (all-nested-deps ns-sym)
                   intersection (set/intersection nested-deps changed)]
             :when (not-empty intersection)]
-      (timbre/info "intersection:\n" ns-sym "\n---- " (set/intersection nested-deps changed))
-      ))
+      (doseq [reload-ns-sym intersection
+              :when (not (contains? @reloaded reload-ns-sym))]
+        (timbre/info "Reloading:" reload-ns-sym)
+        (require reload-ns-sym :reload)
+        (vswap! reloaded conj reload-ns-sym))
+      (timbre/info "Running: " ns-sym "builder")))
   ctx)
 
 (mount/defstate watch-and-run
