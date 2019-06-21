@@ -1,13 +1,9 @@
 (ns simple-static.components.pagebuilder
-  (:require [simple-static.components.watch-and-run :refer [watch-and-run]]
-            [simple-static.components.ns-tracker :as ns-tracker]
+  (:require [clojure.string :as str]
             [mount.core :as mount]
-            [simple-static.pages.top :as top]
+            [simple-static.components.watch-and-run :refer [watch-and-run]]
             [simple-static.pages.hello :as hello]
-            [clojure.pprint :refer [pprint]]
-            [taoensso.timbre :as timbre]
-            [clojure.string :as str]
-            [clojure.tools.namespace.file :as ns-file]))
+            [simple-static.pages.top :as top]))
 
 (defmacro when-let*
   ([bindings & body]
