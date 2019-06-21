@@ -69,37 +69,50 @@ namespace name that corresponds with the path name"
   [namespaces path]
   (first (filter #(.endsWith path (ns-file-name %)) namespaces)))
 
-(defn watch-handler [watched]
-  (fn wrapped-watch-handler [ctx ev]
-    (let [watched-ns-syms (set (map :ns (vals @watched)))
-          changed (set (tracker))
-          reloaded (volatile! #{})]
-      (doseq [ns-sym watched-ns-syms
-              :let [nested-deps (all-nested-deps watched ns-sym)
-                    intersection (set/intersection nested-deps changed)]
-              :when (not-empty intersection)]
-        (doseq [reload-ns-sym intersection
-                :when (not (contains? @reloaded reload-ns-sym))]
-          (timbre/info "Reloading:" reload-ns-sym)
-          (require reload-ns-sym :reload)
-          (vswap! reloaded conj reload-ns-sym))
-        (timbre/info "Running: " ns-sym "builder")))
-    ctx))
+(defn rebuild [target [out-file {:keys [data builder ns-sym]}]]
+  (let [out-file (io/file target out-file)]
+    (timbre/info "BUILD [" (.getPath out-file) "] with" ns-sym)
+    (io/make-parents out-file)
+    (spit
+     out-file
+     ((resolve builder) data))))
+
+(defn watch-handler [{:keys [watched target]}]
+  (let [changed (set (tracker))
+        reloaded (volatile! #{})]
+    (doseq [job @watched
+            :let [ns-sym (:ns-sym (second job))
+                  nested-deps (all-nested-deps watched ns-sym)
+                  intersection (set/intersection nested-deps changed)]
+            :when (not-empty intersection)]
+      ;; reload changed namespaces
+      (doseq [reload-ns-sym intersection
+              :when (not (contains? @reloaded reload-ns-sym))]
+        (timbre/info "Reloading:" reload-ns-sym)
+        (require reload-ns-sym :reload)
+        (vswap! reloaded conj reload-ns-sym))
+      ;; run job
+      (rebuild target job))))
 
 (mount/defstate watch-and-run
   :start
-  (let [watched (atom {})]
-   {:watcher (hawk/watch! [{:paths (:tracked-src env ["src" "data"])
-                            :handler (watch-handler watched)}])
-    :watched watched})
+  (let [watched (atom {})
+        target (:target env "target")]
+    {:watcher (hawk/watch!
+               [{:paths (:tracked-src env ["src" "data"])
+                 :handler (fn [ctx ev]
+                            (watch-handler {:watched watched
+                                            :target target}))}])
+     :target target
+     :watched watched
+     :add-jobs
+     (fn add-jobs [jobmap]
+       (swap! watched into jobmap)
+       (doseq [job jobmap]
+         (rebuild target job)))
+     :remove-jobs
+     (fn remove-jobs [jobmap]
+       (doseq [v (keys jobmap)]
+         (swap! watched dissoc v)))})
   :stop
   (hawk/stop! (:watcher watch-and-run)))
-
-(defn add-jobs [watcher m]
-  (when (:watched watcher)
-    (swap! (:watched watcher) into m)))
-
-(defn remove-jobs [watcher m]
-  (doseq [v (keys m)]
-    (when (:watched watcher)
-      (swap! (:watched watcher) dissoc v))))

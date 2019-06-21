@@ -1,5 +1,5 @@
 (ns simple-static.components.pagebuilder
-  (:require [simple-static.components.watch-and-run :as watch-and-run]
+  (:require [simple-static.components.watch-and-run :refer [watch-and-run]]
             [simple-static.components.ns-tracker :as ns-tracker]
             [mount.core :as mount]
             [simple-static.pages.top :as top]
@@ -22,13 +22,13 @@
     'simple-static.pages.layout})
 
 (def out-map
-  {"index.html" {:template 'top/template
+  {"index.html" {:builder 'simple-static.pages.top/template
                  :data {:body-class "top"}}
-   "hello" {"index.html" {:template 'hello/template
+   "hello" {"index.html" {:builder 'simple-static.pages.hello/template
                           :data {:body-class "hello"}}}})
 
 (defn sym->ns-sym [sym]
-  (-> (ns-resolve 'simple-static.components.pagebuilder sym)
+  (-> (resolve sym)
       meta
       :ns
       ns-name
@@ -43,18 +43,19 @@
      (doall
       (tree-seq
        (fn parse-out-map-br? [node]
-         (if (:template node)
-           (let [ns-sym (sym->ns-sym (:template node))]
+         (if (:builder node)
+           (let [ns-sym (sym->ns-sym (:builder node))]
              (vswap! acc assoc (str base-path (str/join "/" (:path node)))
                      {:path (str base-path (str/join "/" (:path node)))
-                      :ns ns-sym
+                      :ns-sym ns-sym
                       :data (:data node)
-                      :template (:template node)})
+                      :builder (:builder node)})
              false)
            (map? node)))
        (fn parse-out-map-children [node]
          (for [[p n] node
-               :when (not= :path p)]
+               :when (and
+                      (not= :path p))]
            (assoc n :path ((fnil conj []) (:path node) p))))
        out-map))
      @acc)))
@@ -63,27 +64,8 @@
   simple-pages
   :start
   (let [out-map (parse-out-map out-map)]
-    (swap!
-     (:watched watch-and-run/watch-and-run)
-     into out-map)
+    (println "adding jobs")
+    ((:add-jobs watch-and-run) out-map)
     out-map)
   :stop
-  (doseq [k (keys simple-pages)]
-    (swap! (:watched watch-and-run/watch-and-run)
-           dissoc k)))
-
-(comment
- (watch-and-run/start-watcher
-    :simple-pages
-    {:namespaces namespaces
-     :handler
-     (fn watching-simple [ctx e]
-       (println (ns-tracker/tracker))
-       (when (= (:kind e) :modify)
-         (when-let* [ns-path (watch-and-run/select-ns-path namespaces (str (:file e)))
-                     ns (watch-and-run/file->ns namespaces ns-path)]
-           (timbre/info (prn-str ns))
-           (when (namespaces ns)
-             (require ns :reload-all))
-           ))
-       ctx)}))
+  ((:remove-jobs watch-and-run) simple-pages))
