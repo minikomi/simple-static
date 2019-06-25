@@ -1,4 +1,5 @@
 (ns simple-static.pages.hello
+  {:ns-tracker/resource-deps ["test.txt"]}
   (:require [simple-static.pages.layout
              :as layout
              :refer [defdiv]]
@@ -10,6 +11,8 @@
   [:h2
    [:a {:href "/"}
     "Back to top"]]
+  [:h3
+   (slurp "data/test.txt")]
   [:ul
    (for [n (range 100)]
      (case (rem n 3)
