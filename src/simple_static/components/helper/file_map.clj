@@ -7,7 +7,7 @@
 (defn spit-txt [base-path {:keys [template path data]}]
   (let [out-file
         (apply fs/file
-               (:target env "target")
+               (:target env "target/public")
                base-path
                path)]
     (timbre/info "\nBUILD [" (.getPath out-file) "] with" template)

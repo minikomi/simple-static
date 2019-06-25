@@ -18,6 +18,7 @@
     (require 'cider.nrepl)
     (ns-resolve 'cider.nrepl 'cider-nrepl-handler)
     (timbre/info (str "Starting nrepl on port " nrepl-port))
+    (spit ".nrepl-port" nrepl-port)
     (nrepl-server/start-server
      :port nrepl-port
      :init-ns 'sekistone.server.repl
