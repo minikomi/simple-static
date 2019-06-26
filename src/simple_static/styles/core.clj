@@ -3,6 +3,7 @@
    [clojure.java.io :as io]
    [simple-static.styles.top :as top]
    [simple-static.styles.hello :as hello]
+   [simple-static.components.config :as config]
    [garden.core :as garden]
    [garden.selectors :as gs]
    [garden.units :refer [em percent px]]))
@@ -18,6 +19,6 @@
 
 (defn compile [data]
   (garden/css
-   {:prety-print? true
+   {:prety-print? (:dev config/env false)
     :preamble #{(io/resource "css/normalize.css")}}
    combined))

@@ -1,0 +1,4 @@
+{"index.html" {:template simple-static.pages.top/template
+               :data {:body-class "top"}}
+ "hello" {"index.html" {:template simple-static.pages.hello/template
+                        :data {:body-class "hello"}}}}

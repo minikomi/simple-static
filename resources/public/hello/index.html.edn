@@ -1,2 +1,0 @@
-{:template simple-static.pages.hello/template
- :body-class "hello"}

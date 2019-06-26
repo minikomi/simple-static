@@ -2,8 +2,10 @@
   (:require [me.raynes.fs :as fs]
             [simple-static.components.config :refer [env]]
             [clojure.java.io :as io]
+            [clojure.edn :as edn]
             [taoensso.timbre :as timbre]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.pprint :as pprint]))
 
 (defn spit-txt [base-path {:keys [template path data]}]
   (let [out-file
@@ -27,11 +29,16 @@
       name
       symbol))
 
-(defn file-map->jobs
-  ([file-map]
-   (file-map->jobs file-map {:extra-namespaces #{} :base-path ""}))
-  ([file-map {:keys [base-path]}]
-   (let [acc (volatile! #{})]
+(defn load-file-map
+  ([file-map-name]
+   (load-file-map file-map-name {:extra-namespaces #{} :base-path ""}))
+  ([file-map-name {:keys [base-path]}]
+   (println file-map-name)
+   (let [path (str "file-maps/" file-map-name ".edn")
+         fmr (io/resource path)
+         fm (io/reader fmr)
+         file-map (edn/read (java.io.PushbackReader. fm))
+         acc (volatile! #{})]
      (doall
       (tree-seq
        (fn file-map->jobs-br? [node]

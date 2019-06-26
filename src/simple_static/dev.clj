@@ -1,4 +1,4 @@
-(ns simple-static.core
+(ns simple-static.dev
   (:gen-class)
   (:require
    [simple-static.components.nrepl :as n]
@@ -7,6 +7,7 @@
    [simple-static.components.http-server]
    [simple-static.components.figwheel]
    [simple-static.components.config :as config]
+   [clojure.pprint :as pprint]
    [mount.core :as mount]
    [taoensso.timbre :as timbre]
    [me.raynes.fs :as fs]))
@@ -28,12 +29,13 @@
 (comment
   (start!)
   (stop!)
-  (restart!)
-  )
+  (restart!))
 
 (defn -main [& args]
   (timbre/info "Cleaning target dir")
-  (fs/delete-dir (:target config/env "target/public"))
+  (when (fs/exists? (:target config/env))
+    (fs/delete-dir (:target config/env)))
   (timbre/info "-={ MOUNTING }=-")
-  (timbre/info (mount/start))
-  )
+  (timbre/info
+   (with-out-str (pprint/pprint
+                  (mount/start)))))

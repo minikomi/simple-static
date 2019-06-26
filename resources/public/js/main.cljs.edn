@@ -1,5 +1,0 @@
-{:require [simple-static.frontend.core]
- :init-fns [simple-static.frontend.core/init]
- :boot-reload {:on-jsload simple-static.frontend.core/init}
- :compiler-options {:asset-path "/js/main.out"}
- }
