@@ -38,7 +38,9 @@
          (if (:template node)
            (let [ns-sym (sym->ns-sym (:template node))]
              (vswap! acc conj
-                     {:ns-sym ns-sym
+                     {:base-path base-path
+                      :node node
+                      :ns-sym ns-sym
                       :build-fn (fn [] (spit-txt base-path node))})
              false)
            (map? node)))

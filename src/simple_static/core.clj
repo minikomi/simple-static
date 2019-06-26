@@ -3,6 +3,7 @@
   (:require
    [simple-static.components.nrepl :as n]
    [simple-static.components.pagebuilder]
+   [simple-static.components.garden]
    [simple-static.components.http-server]
    [simple-static.components.figwheel]
    [simple-static.components.config :as config]
