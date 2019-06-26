@@ -18,5 +18,4 @@
   (events/unlisten js/window event-type/CLICK change-bg)
   (events/listen js/window event-type/CLICK change-bg))
 
-(defonce run-init
-  (init))
+(init)

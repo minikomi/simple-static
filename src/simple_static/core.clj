@@ -3,9 +3,12 @@
   (:require
    [simple-static.components.nrepl :as n]
    [simple-static.components.pagebuilder]
+   [simple-static.components.http-server]
+   [simple-static.components.figwheel]
+   [simple-static.components.config :as config]
    [mount.core :as mount]
-
-   [taoensso.timbre :as timbre]))
+   [taoensso.timbre :as timbre]
+   [me.raynes.fs :as fs]))
 
 (defn start! []
   (->
@@ -28,5 +31,8 @@
   )
 
 (defn -main [& args]
+  (timbre/info "Cleaning target dir")
+  (fs/delete-dir (:target config/env "target/public"))
+  (timbre/info "-={ MOUNTING }=-")
   (timbre/info (mount/start))
-  (timbre/info "yo we started"))
+  )

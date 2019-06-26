@@ -1,8 +1,9 @@
 (ns simple-static.components.helper.file-map
   (:require [me.raynes.fs :as fs]
-            [taoensso.timbre :as timbre]
             [simple-static.components.config :refer [env]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [taoensso.timbre :as timbre]
+            [clojure.string :as str]))
 
 (defn spit-txt [base-path {:keys [template path data]}]
   (let [out-file
@@ -10,7 +11,9 @@
                (:target env "target/public")
                base-path
                path)]
-    (timbre/info "\nBUILD [" (.getPath out-file) "] with" template)
+    (timbre/infof "BUILD [%s]->[%s]"
+                  template
+                  (str/join "/" path))
     (io/make-parents out-file)
     (spit
      out-file
