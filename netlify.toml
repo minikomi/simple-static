@@ -1,4 +1,4 @@
 [build]
   base    = ""
   publish = "target/public"
-  command = "clojure -m simple-static.build"
+  command = "clj -m simple-static.build"
