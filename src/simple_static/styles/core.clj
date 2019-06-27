@@ -18,7 +18,7 @@
    hello/styles])
 
 (defn compile [data]
-  (garden/css
-   {:prety-print? (:dev config/env false)
-    :preamble #{(io/resource "css/normalize.css")}}
-   combined))
+  (println (garden/css
+    {:prety-print? (:dev config/env false)
+     :preamble #{(io/resource "css/normalize.css")}}
+    combined)))

@@ -54,8 +54,7 @@
   (facebook params))
 
 (def default-css
-  (list (hp/include-css (str "/css/styles.css?v=" (local/local-now)))))
-
+  (list (hp/include-css (str "/css/main.css?v=" (local/local-now)))))
 
 ;; menu
 

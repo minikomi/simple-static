@@ -1,16 +1,19 @@
 (ns simple-static.components.pagebuilder
   (:require [mount.core :as mount]
-            [simple-static.components.helper.file-map :as file-map]
-            [simple-static.components.watch-and-run :refer [watch-and-run add-jobs remove-jobs]]
+            [co.poyo.file-map :as file-map]
+            [co.poyo.watch-and-run :as watch-and-run]
             [simple-static.pages.hello :as hello]
             [simple-static.pages.top :as top]
+            [simple-static.components.config :as config]
             [clojure.java.io :as io]))
 
 (mount/defstate
   simple-pages
   :start
-  (let [jobs (file-map/load-file-map "pages")]
-    (add-jobs jobs)
+  (let [jobs (file-map/load-file-map
+              (io/resource "file-maps/pages.edn")
+              {:base-path (:target config/env)})]
+    (watch-and-run/add-jobs jobs)
     jobs)
   :stop
-  (remove-jobs simple-pages))
+  (watch-and-run/remove-jobs simple-pages))

@@ -33,8 +33,11 @@
 
 (defn -main [& args]
   (timbre/info "Cleaning target dir")
+  (mount/start (mount/only #{#'config/env}))
+  (println (:target config/env))
   (when (fs/exists? (:target config/env))
     (fs/delete-dir (:target config/env)))
+  (fs/mkdir (:target config/env))
   (timbre/info "-={ MOUNTING }=-")
   (timbre/info
    (with-out-str (pprint/pprint

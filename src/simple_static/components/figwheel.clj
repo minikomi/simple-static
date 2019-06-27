@@ -6,9 +6,6 @@
 (mount/defstate
   figwheel
   :start
-  (figwheel/start
-   {:mode :serve
-    :open-url false}
-   :dev)
+  (figwheel/start {:mode :serve :open-url false} :dev)
   :stop
   (figwheel/stop-all))

@@ -57,7 +57,7 @@
 (defn wrap-handler []
   (-> base-handler
       (wrap-resource "public")
-      (wrap-file (fs/file (config/env :target "target/public")))
+      (wrap-file (fs/file (:target config/env)))
       (maybe-wrap-static)
       (wrap-restful-format)
       (wrap-content-type)

@@ -6,7 +6,6 @@
             [clojure.tools.namespace.track :as ns-track]
             [hawk.core :as hawk]
             [mount.core :as mount]
-            [simple-static.components.config :refer [env]]
             [simple-static.components.ns-tracker :refer [tracker]]
             [taoensso.timbre :as timbre]))
 
@@ -21,7 +20,7 @@
     dep-graph))
 
 (defn all-local-deps-deep [ns-sym]
-  (let [tracked-src (:tracked-src env ["src" "data"])
+  (let [tracked-src ["src"]
         all-dependencies (:dependencies (get-dep-graph tracked-src))
         ns-names (set (ns-find/find-namespaces (map io/file tracked-src)))
         part-of-project? (partial contains? ns-names)]
@@ -50,7 +49,7 @@
   :start
   (let [watched (atom #{})
         watcher (hawk/watch!
-                 [{:paths (:tracked-src env ["src" "data"])
+                 [{:paths ["src"]
                    :handler (fn [ctx ev] (watch-handler watched))}])]
     {:watcher watcher :watched watched})
   :stop

@@ -1,2 +1,4 @@
 {:dev true
- :port 3000}
+ :static "static"
+ :port 3000
+ :target "target/public"}

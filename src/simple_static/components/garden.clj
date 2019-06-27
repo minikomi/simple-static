@@ -1,17 +1,21 @@
 (ns simple-static.components.garden
   (:require [garden.core :as garden]
             [mount.core :as mount]
+            [simple-static.components.config :as config]
             [simple-static.styles.core :as styles]
-            [simple-static.components.watch-and-run
-             :refer [watch-and-run add-jobs remove-jobs]]
+            [co.poyo.watch-and-run
+             :as watch-and-run]
+            [co.poyo.file-map :as file-map]
             [clojure.java.io :as io]
-            [simple-static.components.helper.file-map :as file-map]))
+            ))
 
 (mount/defstate
   garden
   :start
-  (let [jobs (file-map/load-file-map "css" {:base-path "css"})]
-    (add-jobs jobs)
+  (let [jobs (file-map/load-file-map
+              (io/resource "file-maps/css.edn")
+              {:base-path (io/file (:target config/env) "css")})]
+    (watch-and-run/add-jobs jobs)
     jobs)
   :stop
-  (remove-jobs garden))
+  (watch-and-run/remove-jobs garden))
