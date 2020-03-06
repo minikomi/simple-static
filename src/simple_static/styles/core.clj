@@ -3,7 +3,7 @@
    [clojure.java.io :as io]
    [simple-static.styles.top :as top]
    [simple-static.styles.hello :as hello]
-   [simple-static.components.config :as config]
+   [co.poyo.static-tools.config :as config]
    [garden.core :as garden]
    [garden.selectors :as gs]
    [garden.units :refer [em percent px]]))
@@ -17,8 +17,8 @@
    top/styles
    hello/styles])
 
-(defn compile [data]
-  (println (garden/css
-    {:prety-print? (:dev config/env false)
-     :preamble #{(io/resource "css/normalize.css")}}
-    combined)))
+(defn compiled [data]
+  (garden/css
+   {:prety-print? (:dev config/env false)
+    :preamble #{(io/resource "css/normalize.css")}}
+   combined))

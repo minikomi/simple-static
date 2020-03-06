@@ -1,4 +1,5 @@
 {:dev true
  :static "static"
- :port 3000
+ :port 3001
+ :nrepl-port 10001
  :target "target/public"}

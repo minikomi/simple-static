@@ -1,4 +1,3 @@
-^{:watch-dirs ["src"]
-  :css-dirs ["target/public/css"]}
 {:main simple-static.frontend.core
+ :optimizations :advanced
  :output-to "target/public/js/main.js"}

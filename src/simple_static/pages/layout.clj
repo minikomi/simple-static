@@ -83,4 +83,4 @@
       google-analytics
       [:div#footer]
       (case (:js params)
-        [:script {:src "/cljs-out/dev-main.js"}])]])))
+        [:script {:src "/js/main.js"}])]])))

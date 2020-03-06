@@ -1,4 +1,4 @@
+# example netlify.toml
 [build]
-  base    = ""
+  command = "clj -Astatic-tools:build"
   publish = "target/public"
-  command = "clj -m simple-static.build"

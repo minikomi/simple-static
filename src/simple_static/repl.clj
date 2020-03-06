@@ -1,1 +1,0 @@
-(ns simple-static.repl)
