@@ -1,5 +1,14 @@
-* static tools
+* Simple Static site
 
+- uses hiccup for html
+- cljs for js
+- garden for css/styles
+- can be deployed to netlify
+
+** Notes
+
+- Routes are in =resources/file-maps/pages.edn=
+- Garden css targets are in =resources/file-maps/css.edn=
 
 ** Local dev
 
