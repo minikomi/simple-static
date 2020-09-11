@@ -1,1 +1,18 @@
 * static tools
+
+
+** Local dev
+
+#+begin_example
+clj -Astatic-tools:dev
+
+open localhost:3001
+#+end_example
+
+** Build
+
+#+begin_example
+clj -Astatic-tools:build
+
+result is in target/public/
+#+end_example
